@@ -1,0 +1,5 @@
+1. Types (array, hstore, json)
+2. array can be on top level, works with selects
+3. hstore - values only strings
+4. json - nested values could be arrays
+5.

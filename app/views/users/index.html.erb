@@ -1,0 +1,169 @@
+<h1>Listing users</h1>
+
+<%= link_to 'Logs', '/logs' %>
+&nbsp;
+<%= link_to 'Docs', '/docs' %>
+&nbsp;
+<%= link_to 'Organizations', '/orgs' %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>About</th>
+      <th>Sex</th>
+      <th>Tags</th>
+      <th>Department JSON</th>
+      <th>Location JSON</th>
+      <th>Age JSON</th>
+      <th>Department HSTORE</th>
+      <th>Location HSTORE</th>
+      <th>Age Hstore</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @users.each do |user| %>
+      <tr>
+        <td><%= user.name %></td>
+        <td><%= user.email %></td>
+        <td><%= user.about %></td>
+        <td><%= user.sex %></td>
+        <td><%= user.tags %></td>
+        <td><%= user.department_json %></td>
+        <td><%= user.location_json %></td>
+        <td><%= user.age_json %></td>
+        <td><%= user.department_hstore %></td>
+        <td><%= user.location_hstore %></td>
+        <td><%= user.age_hstore %></td>
+        <td><%= link_to 'Show', user %></td>
+        <td><%= link_to 'Edit', edit_user_path(user) %></td>
+        <td><%= link_to 'Destroy', user, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New User', new_user_path %>
+
+<hr/>
+
+<pre>
+  def User.to_ui
+    select(:name).to_a
+  end
+</pre>
+
+<pre>
+  Add indexes: CREATE INDEX users_dicts ON users USING GIN(dict_hstore);
+</pre>
+
+<h2>Array</h2>
+
+<h3>With Tag: HTML</h3>
+<pre>
+  User.where.contains(:tags => ['HTML', 'CSS']).to_ui
+</pre>
+<p>
+  <%= User.where.contains(:tags => ['HTML', 'CSS']).to_ui%>
+</p>
+
+<h3>With Tag: HTML & CSS</h3>
+<pre>
+  User.where.overlap(:tags => ['HTML', 'CSS']).to_ui
+</pre>
+<p>
+  <%= User.where.overlap(:tags => ['HTML', 'CSS']).to_ui %>
+</p>
+
+
+<h3>With ANY Tag: CSS, JS</h3>
+<pre>
+  User.where.any(:tags => 'CSS')
+</pre>
+<p>
+  <%= User.where.any(:tags => 'CSS').to_ui %>
+</p>
+
+
+<h3>With ALL Tag: CSS</h3>
+<pre>
+  User.where.all(:tags => 'CSS')
+</pre>
+<p>
+  <%= User.where.all(:tags => 'CSS').to_ui %>
+</p>
+
+<h2>JSON</h2>
+
+
+<h3>Select all locations from JSON</h3>
+<pre>
+  User.select("id, name, dict_json->>'location_json' as loc_js").to_a.collect{|e| [e.id, e.name, e.loc_js]}
+
+  Note: Indexes should be created
+  CREATE UNIQUE INDEX user_locs ON users ((dict_json->>'location_json'));
+</pre>
+<p>
+  <%= User.select("id, name, dict_json->>'location_json' as loc_js").to_a.collect{|e| [e.id, e.name, e.loc_js]} %>
+</p>
+
+<h3>Select all locations from JSON starting with "Iv"</h3>
+<pre>
+  User.select("id, name, dict_json->>'location_json' as loc_js").where("dict_json->>'location_json' like 'Iv%'").to_a.collect{|e| [e.id, e.name, e.loc_js]}
+</pre>
+<p>
+  <%= User.select("id, name, dict_json->>'location_json' as loc_js").where("dict_json->>'location_json' like 'Iv%'").to_a.collect{|e| [e.id, e.name, e.loc_js]} %>
+</p>
+
+<h3>Do SQL commands on JSON data</h3>
+<pre>
+  SELECT dict_json->>'location_json' AS loc_js, count(loc_js) FROM events GROUP BY dict_json->>'location_json';
+</pre>
+<p>
+  <%= User.select("dict_json->>'location_json' AS loc_js, count(dict_json->>'location_json') as loc_js_count").group("dict_json->>'location_json'").to_a.collect{|e| [e.loc_js, e.loc_js_count]} %>
+</p>
+
+<h3>Select users with age > 20 (JSON)</h3>
+<pre>
+  User.where("CAST(dict_json->>'age_json' AS integer) > 20").to_ui
+</pre>
+<p>
+  <%= User.where("CAST(dict_json->>'age_json' AS integer) > 20").to_ui %>
+</p>
+
+<hr/>
+
+<h2>HSTORE</h2>
+
+<h3>Select users with age > 20 (HSTORE)</h3>
+<pre>
+  User.where("CAST(dict_hstore->>'age_hstore' AS integer) > 20").to_ui
+</pre>
+<p>
+  <%= User.where("(dict_hstore -> 'age_hstore')::int > 20").to_ui %>
+</p>
+
+<h3>Select users from city IF (HSTORE)</h3>
+<pre>
+  User.where("dict_hstore @> 'location_hstore=>Kiev' ").to_ui
+</pre>
+<p>
+  <%= User.where("dict_hstore @> 'location_hstore=>Kiev' ").to_ui %>
+</p>
+
+<hr/>
+
+<h2>Other Notes</h2>
+
+<h3>How data are stored in the DB</h3>
+<pre>
+"age_hstore"=>"22", "location_hstore"=>"Lviv", "department_hstore"=>"[\"A\", \"\"]"
+{"department_json":["C",""],"location_json":"Lviv","age_json":"33"}
+</pre>

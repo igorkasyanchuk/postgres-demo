@@ -1,0 +1,13 @@
+<h1>Logs</h1>
+
+<%= link_to 'Users', :users %>
+
+<table>
+
+  <% Log.ordered.each do |log| %>
+    <tr>
+      <td><%= log.message %></td>
+    </tr>
+  <% end %>
+
+</table>

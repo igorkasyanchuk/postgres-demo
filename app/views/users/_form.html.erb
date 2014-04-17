@@ -1,0 +1,24 @@
+<%= simple_form_for @user do |f| %>
+  <%= f.input :name %>
+  <%= f.input :email %>
+  <%= f.input :about %>
+  <%= f.input :sex %>
+
+  <%= f.input :tags, :collection => ['Ruby', 'Java', 'HTML', 'CSS', 'JS', 'Node.JS'], as: :check_boxes, :include_hidden => true %>
+
+  <p>JSON</p>
+
+  <%= f.input :department_json, :collection => ['A', 'B', 'C'], :as => :check_boxes, :include_hidden => true %>
+  <%= f.input :location_json, :collection => ['Ivano-Frankivsk', 'Lviv', 'Kiev'], as: :select, :include_hidden => false %>
+  <%= f.input :age_json %>
+
+  <p>HSTORE</p>
+
+  <%= f.input :department_hstore, :collection => ['A', 'B', 'C'], :as => :check_boxes, :include_hidden => false %>
+  <%= f.input :location_hstore, :collection => ['Ivano-Frankivsk', 'Lviv', 'Kiev'], as: :select, :include_hidden => false %>
+  <%= f.input :age_hstore %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

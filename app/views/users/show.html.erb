@@ -1,0 +1,63 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @user.name %>
+</p>
+
+<p>
+  <strong>Email:</strong>
+  <%= @user.email %>
+</p>
+
+<p>
+  <strong>About:</strong>
+  <%= @user.about %>
+</p>
+
+<p>
+  <strong>Sex:</strong>
+  <%= @user.sex %>
+</p>
+
+<p>
+  <strong>Tags:</strong>
+  <%= @user.tags %>
+</p>
+
+<p>json</p>
+
+<p>
+  <strong>Departments:</strong>
+  <%= @user.department_json %>
+</p>
+
+<p>
+  <strong>Location:</strong>
+  <%= @user.location_json %>
+</p>
+
+<p>
+  <strong>Age:</strong>
+  <%= @user.age_json %>
+</p>
+
+<p>hstore</p>
+
+<p>
+  <strong>Departments:</strong>
+  <%= @user.department_hstore %>
+</p>
+
+<p>
+  <strong>Location:</strong>
+  <%= @user.location_hstore %>
+</p>
+
+<p>
+  <strong>Age:</strong>
+  <%= @user.age_hstore %>
+</p>
+
+<%= link_to 'Edit', edit_user_path(@user) %> |
+<%= link_to 'Back', users_path %>
