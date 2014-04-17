@@ -3,3 +3,5 @@
 3. hstore - values only strings
 4. json - nested values could be arrays
 5.
+
+Demo: http://morning-sands-6847.herokuapp.com/users
